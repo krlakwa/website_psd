@@ -1,0 +1,82 @@
+//===CSS GRID===
+* {
+	box-sizing: border-box;	
+}
+
+.container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+%clearfix {
+  &::before,
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+.row {
+  @extend %clearfix;
+}
+
+[class*="col-"] {
+	float: left;
+	min-height: 1px;
+	padding: 0;
+}
+
+@media (min-width: $breakpoint) {
+  @for $i from 1 through 12 {
+    .col-#{$i} {
+      width: 100% / $grid-columns * $i;
+    }
+    .col-offset-#{$i} {
+      margin-left: 100% / $grid-columns * $i;
+    }
+  }
+}
+
+$breakpoints: (
+"s": (max-width: $breakpoint),
+"m": (min-width: $breakpoint)
+);
+
+@mixin respond-to($breakpoint) {
+	$query: map-get($breakpoints, $breakpoint);
+
+	@if $query {
+		$q: if(
+			type-of($query) == 'string',
+			unquote($query),
+			inspect($query)
+		);
+
+		@media #{$q} {
+			@content;
+		}
+	}
+}
+
+@each $k, $value in $breakpoints {
+	@include respond-to($k) {
+		@for $i from 1 through 12 {
+    		.col-#{$k}-#{$i} {
+      			width: 100% / $grid-columns * $i;
+    		}
+  		}
+	}
+}
+
+@media (max-width: $breakpoint) {
+  [class*="col-"] {
+    padding: 12px;
+  }
+  @for $i from 1 through 12 {
+    .col-s-#{$i} {
+      width: 100% / $grid-columns * $i;
+    }
+  }
+}
